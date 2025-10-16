@@ -12,6 +12,19 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.response import Response
 from .serializer import UsuarioSerializer
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def create_admin(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="admin@sm.com",
+            password="admin123"
+        )
+        return JsonResponse({"status": "ok", "message": "Superusuario creado"})
+    return JsonResponse({"status": "exists", "message": "El admin ya existe"})
 
 # Create your views here.
 
