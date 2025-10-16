@@ -88,21 +88,30 @@ WSGI_APPLICATION = 'django_sm_api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+import os
+from pathlib import Path
 
-DATABASES = {
-    'lite': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'streaming_mania',
-        'USER': 'root',
-        'PASSWORD': 'CTPIADSO2024*',
-        'HOST': 'localhost',
-        'PORT': '3306',
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+if os.getenv('USE_SQLITE', 'false').lower() == 'true':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('DB_NAME', 'streamingmania'),
+            'USER': os.getenv('DB_USER', 'root'),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '3306'),
+            'OPTIONS': {'charset': 'utf8mb4'},
+        }
+    }
 
 
 # Password validation

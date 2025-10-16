@@ -26,8 +26,11 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      # 👇 AQUÍ está el cambio importante:
       - name: Migrar base de datos SQLite
         working-directory: django_sm_api
+        env:
+          USE_SQLITE: true       # <- activa SQLite temporalmente en el CI
         run: python manage.py migrate --noinput
 
       - name: Ejecutar tests (si los hay)
