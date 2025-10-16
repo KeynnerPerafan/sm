@@ -93,6 +93,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+if os.environ.get('RENDER', 'false').lower() == 'true' or os.environ.get('DISABLE_COLLECTSTATIC'):
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 if os.getenv('USE_SQLITE', 'false').lower() == 'true':
     DATABASES = {
         'default': {
