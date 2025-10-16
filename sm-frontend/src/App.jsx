@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 
-import LoginPage from "./pages/LoginPage";
+import Login from "./pages/Login";
 import AdminRegisterUser from "./pages/AdminRegisterUser";
 import DashboardAdmin from "./pages/AdminDashboard";
 import DashboardCliente from "./pages/ClienteDashboard";
@@ -13,7 +13,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<Login />} />
 
           {/* 🔒 Rutas protegidas por rol */}
           <Route
