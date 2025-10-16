@@ -182,6 +182,11 @@ CORS_ALLOW_ALL_ORIGINS = False  # seguridad: false en producción
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # React + Vite
     "http://127.0.0.1:5173",
+    "https://sm-frontend-n1ee.onrender.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://sm-frontend-n1ee.onrender.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

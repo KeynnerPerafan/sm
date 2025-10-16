@@ -7,8 +7,22 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .tokens import MyTokenObtainPairSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework import status
+from rest_framework.response import Response
+from .serializer import UsuarioSerializer
 
 # Create your views here.
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    s = UsuarioSerializer(data=request.data)
+    if s.is_valid():
+        s.save()
+        return Response(s.data, status=status.HTTP_201_CREATED)
+    return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]

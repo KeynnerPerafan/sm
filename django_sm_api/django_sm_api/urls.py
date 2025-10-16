@@ -1,19 +1,3 @@
-"""
-URL configuration for django_sm_api project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
@@ -23,7 +7,9 @@ from distribuidores.views import DistribuidorViewSet
 from productos.views import ProductoViewSet
 from ventas.views import VentaViewSet, VentaDetalleViewSet
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from usuarios.tokens import MyTokenObtainPairView  # 👈 tu nueva vista personalizada
 
+# Configurar router principal
 router = DefaultRouter()
 router.register(r'roles', RolViewSet)
 router.register(r'usuarios', UsuarioViewSet)
@@ -35,12 +21,17 @@ router.register(r'venta-detaller', VentaDetalleViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # 🔑 Login JWT personalizado con rol
+    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    
-    path('api/', include('usuarios.urls')),
-    path('api/', include('ventas.urls')),
-    
+
+    # 🔗 Rutas de tus apps
     path('api/', include(router.urls)),
+    path('api/usuarios/', include('usuarios.urls')),
+    path('api/ventas/', include('ventas.urls')),
+
+    # 👤 Perfil de usuario autenticado
     path('api/profile/', ProfileView.as_view(), name='profile'),
 ]

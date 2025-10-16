@@ -1,20 +1,18 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
+
+        # Agregamos campos personalizados
         token['username'] = user.username
         token['email'] = user.email
+        token['rol'] = user.rol  # ⚠️ este campo debe existir en tu modelo Usuario
+
         return token
 
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        data['user'] = {
-            'id': self.user.id,
-            'username': self.user.username,
-            'email': self.user.email,
-        }
-        data['access'] = data.get('access')
-        data['refresh'] = data.get('refresh')
-        return data
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -1,43 +1,53 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import LoginPage from "./auth/LoginPage";
-import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import PrivateRoute from "./auth/PrivateRoute";
-import AdminRegistrarUsuario from "./pages/AdminRegistrarUsuario"; // 👈 nueva página
+import PrivateRoute from "./components/PrivateRoute";
+
+import LoginPage from "./pages/LoginPage";
+import AdminRegisterUser from "./pages/AdminRegisterUser";
+import DashboardAdmin from "./pages/AdminDashboard";
+import DashboardCliente from "./pages/ClienteDashboard";
+import DashboardVendedor from "./pages/VendedorDashboard";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
 
+          {/* 🔒 Rutas protegidas por rol */}
           <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-
-          {/* 🔒 Solo para el admin */}
-          <Route
-            path="/admin/registrar"
+            path="/admin/register-user"
             element={
               <PrivateRoute allowedRoles={["admin"]}>
-                <AdminRegistrarUsuario />
+                <AdminRegisterUser />
               </PrivateRoute>
             }
           />
 
           <Route
-            path="/vendedor"
+            path="/admin/dashboard"
             element={
-              <PrivateRoute requiredRole="vendedor">
-                <VendedorDashboard />
+              <PrivateRoute allowedRoles={["admin"]}>
+                <DashboardAdmin />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/vendedor/stock"
+            element={
+              <PrivateRoute allowedRoles={["vendedor"]}>
+                <DashboardVendedor />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/cliente/mis-compras"
+            element={
+              <PrivateRoute allowedRoles={["cliente"]}>
+                <DashboardCliente />
               </PrivateRoute>
             }
           />

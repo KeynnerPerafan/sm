@@ -6,7 +6,7 @@ function AdminRegisterUser() {
     username: "",
     email: "",
     password: "",
-    role: "cliente", // valor por defecto
+    rol: "cliente", // coincide con el backend
   });
 
   const [mensaje, setMensaje] = useState("");
@@ -21,12 +21,12 @@ function AdminRegisterUser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Cambia esta URL a la ruta de tu backend Django (por ejemplo: http://127.0.0.1:8000/api/usuarios/register/)
-      const response = await axios.post("http://127.0.0.1:8000/api/usuarios/register/", formData);
+      const API = import.meta.env.VITE_API_BASE;
+      const response = await axios.post(`${API}/usuarios/register/`, formData);
       setMensaje("✅ Usuario registrado con éxito");
-      setFormData({ username: "", email: "", password: "", role: "cliente" });
+      setFormData({ username: "", email: "", password: "", rol: "cliente" });
     } catch (error) {
-      console.error(error);
+      console.error(error.response?.data || error);
       setMensaje("❌ Error al registrar el usuario");
     }
   };
@@ -76,8 +76,8 @@ function AdminRegisterUser() {
           <div>
             <label className="block text-sm font-medium">Rol</label>
             <select
-              name="role"
-              value={formData.role}
+              name="rol"
+              value={formData.rol}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg p-2 focus:ring focus:ring-indigo-200"
             >

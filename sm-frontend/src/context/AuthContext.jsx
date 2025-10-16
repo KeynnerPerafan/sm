@@ -1,58 +1,56 @@
 import { createContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-import api from "../api/axiosConfig";
+import jwtDecode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-
-  useEffect(() => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
     const token = localStorage.getItem("access");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        console.log("✅ Token decodificado:", decoded);
-        setUser(decoded.username);
-        setRole(decoded.role || "cliente"); // por si no tiene rol
-      } catch (err) {
-        console.error("❌ Error al decodificar token:", err);
-        localStorage.removeItem("access");
-      }
-    } else {
-      console.info("ℹ️ No hay token en localStorage");
-    }
-  }, []);
+    return token ? jwtDecode(token) : null;
+  });
 
-  const loginUser = async (username, password) => {
-    const response = await api.post("/token/", { username, password });
+  const login = async (username, password) => {
+    try {
+      const API = import.meta.env.VITE_API_BASE;
+      const res = await fetch(`${API}/token/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (response.status === 200) {
-      const { access, refresh } = response.data;
-      localStorage.setItem("access", access);
-      localStorage.setItem("refresh", refresh);
+      if (!res.ok) throw new Error("Credenciales incorrectas");
 
-      const decoded = jwtDecode(access);
-      setUser(decoded.username);
-      setRole(decoded.role || "cliente");
+      const data = await res.json();
 
-      return decoded.role || "cliente"; // devolvemos el rol
-    } else {
-      throw new Error("Credenciales inválidas");
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+
+      const decoded = jwtDecode(data.access);
+      setUser(decoded);
+
+      // 🔸 Redirige según el rol
+      if (decoded.rol === "admin") navigate("/admin/dashboard");
+      else if (decoded.rol === "vendedor") navigate("/vendedor/stock");
+      else navigate("/cliente/mis-compras");
+    } catch (err) {
+      alert(err.message);
     }
   };
 
-  const logoutUser = () => {
+  const logout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     setUser(null);
-    setRole(null);
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
