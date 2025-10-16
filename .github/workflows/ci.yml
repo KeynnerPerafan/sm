@@ -49,9 +49,9 @@ jobs:
           node-version: "20"
 
       - name: Instalar dependencias
-        working-directory: sm_frontend
+        working-directory: sm-frontend
         run: npm ci
 
       - name: Compilar proyecto
-        working-directory: sm_frontend
+        working-directory: sm-frontend
         run: npm run build
